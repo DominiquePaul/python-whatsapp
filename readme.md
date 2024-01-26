@@ -2,19 +2,16 @@
     <a href="https://github.com/DominiquePaul/python-whatsapp" title="Python Version"><img src="https://img.shields.io/badge/python-3.11+-blue.svg"></a>
     <a href="https://github.com/DominiquePaul/python-whatsapp/blob/master/LICENSE" title="Project License"><img src="https://img.shields.io/badge/license-MIT-blue"></a>
     <a href="https://github.com/psf/black" title="Project License"><img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-    <a href="https://github.com/DominiquePaul/python-whatsapp" title="Follow on Twitter"><img src="https://img.shields.io/github/last-commit/DominiquePaul/python-whatsapp/main"></a>
-    <a href="https://github.com/DominiquePaul/python-whatsapp" title="Follow on Twitter"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/DominiquePaul/python-whatsapp"></a>
-
-
-
+    <a href="https://github.com/DominiquePaul/python-whatsapp"><img src="https://img.shields.io/github/last-commit/DominiquePaul/python-whatsapp/main"></a>
+    <a href="https://github.com/DominiquePaul/python-whatsapp"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/DominiquePaul/python-whatsapp"></a>
     <a href="https://twitter.com/DominiqueCAPaul" title="Follow on Twitter"><img src="https://img.shields.io/twitter/follow/dominiquecapaul.svg?style=social&label=Follow"></a>
 </p>
 
 <p align="center">
-  <a href="#about">Getting Started</a> •
-  <a href="#getting-started">Documentation</a> •
-  <a href="#other-useful-resources-for-using-whatsapp">Support</a> •
-  <a href="#contributing--feature-requests">Contribution</a>
+  <a href="#about">About</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#other-useful-resources-for-using-whatsapp">Other resources</a> •
+  <a href="#contributing--feature-requests">Contribution and feature requests</a>
 </p>
 
 
