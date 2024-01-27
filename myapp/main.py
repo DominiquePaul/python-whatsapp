@@ -76,11 +76,6 @@ async def webhook(data: c.WebhookRequestData):
         return JSONResponse(content=response_body, status_code=400)
 
 
-# Debug.
-def main():
+if __name__ == "__main__":
     print("your verify token is: ", cfg.VERIFY_TOKEN)
     uvicorn.run("grannymail.main:app", reload=True)
-
-
-if __name__ == "__main__":
-    main()
