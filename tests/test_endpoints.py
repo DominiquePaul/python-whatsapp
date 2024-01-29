@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock
-from myapp.main import app
+from src.main import app
 import asyncio
 
 

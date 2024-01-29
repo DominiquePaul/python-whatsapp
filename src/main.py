@@ -6,9 +6,9 @@ import uvicorn
 import os
 import json
 
-import myapp.constants as c
-import myapp.config as cfg
-import myapp.whatsapp as wa
+import src.constants as c
+import src.config as cfg
+import src.whatsapp as wa
 
 
 load_dotenv()

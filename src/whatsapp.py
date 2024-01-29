@@ -1,19 +1,21 @@
 import httpx
-import myapp.config as cfg
+import src.config as cfg
 from dataclasses import dataclass, field
-import myapp.constants as c
+import src.constants as c
 
 
 @dataclass
 class WamBase:
     webhook_id: str
-    message_id: str
+    wamid: str
     phone_number_id: str
     wa_id: str
     profile_name: str
     message_type: str
     timestamp: str
     message_body: str = field(default="", kw_only=True)
+    reference_wamid: str | None = field(default=None, kw_only=True)
+    reference_message_user_phone: str | None = field(default=None, kw_only=True)
 
 
 @dataclass
@@ -59,7 +61,7 @@ async def parse_whatsapp_message(body: c.WebhookRequestData) -> WamBase:
     message = values["messages"][0]
     wam_data = {
         "webhook_id": body.entry[0]["id"],
-        "message_id": message["id"],
+        "wamid": message["id"],
         "phone_number_id": values["metadata"]["phone_number_id"],
         "wa_id": values["contacts"][0]["wa_id"],
         "profile_name": values["contacts"][0]["profile"]["name"],
@@ -67,6 +69,13 @@ async def parse_whatsapp_message(body: c.WebhookRequestData) -> WamBase:
         "timestamp": message["timestamp"],
     }
 
+    if message.get("context"):
+        wam_data.update(
+            {
+                "reference_wamid": message["context"]["id"],
+                "reference_message_user_phone": message["context"]["from"],
+            }
+        )
     if message["type"] == "text":
         wam_data["message_body"] = message["text"]["body"]
     elif message["type"] in ["audio", "document", "image"]:

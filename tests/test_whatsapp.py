@@ -1,5 +1,5 @@
 import pytest
-import myapp.whatsapp as wa
+import src.whatsapp as wa
 
 
 @pytest.mark.asyncio
@@ -14,6 +14,29 @@ async def test_parse_whatsapp_message_text(example_text_message):
     assert (
         result.message_body == "Hello, this is the message"
     ), "The 'message_body' should contain the message text"
+    assert (
+        result.message_id
+        == "wamid.HBgNNDkxNTE1OTkyNjE2MhUCABIYFDNBMDIwQjk1NzQ1ODgxRUI1Njk1AA=="
+    )
+
+
+@pytest.mark.asyncio
+async def test_parse_whatsapp_message_text_reply(example_text_reply):
+    result = await wa.parse_whatsapp_message(example_text_reply)
+
+    assert result is not None, "The result should not be None"
+    assert isinstance(result, wa.WamBase), "The result should be of type WamBase"
+    assert (
+        result.wa_id == "4915159922222"
+    ), "The 'wa_id' value should match the test message sender"
+    assert (
+        result.message_body == "Hi, my message references the one above"
+    ), "The 'message_body' should contain the message text"
+    assert (
+        result.reference_message_id
+        == "wamid.HBgNNDkxNTE1OTkyNjE2MhUCABIYFDNBMDIwQjk1NzQ1ODgxRUI1Njk1AA=="
+    )
+    assert result.reference_message_user_phone == "15551291301"
 
 
 @pytest.mark.asyncio
