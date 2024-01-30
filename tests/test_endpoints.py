@@ -1,8 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock
-from src.main import app
-import asyncio
+from main import app
 
 
 client = TestClient(app)
@@ -32,7 +30,7 @@ async def test_valid_whatsapp_message(mocker, example_text_message):
     # Arrange
     data = example_text_message.model_dump(mode="json")
     mock_send_message = mocker.AsyncMock()
-    mocker.patch("myapp.whatsapp.send_message", new=mock_send_message)
+    mocker.patch("whatsapp.utils.send_message", new=mock_send_message)
     # or whatever the send_message is supposed to return
     mock_send_message.return_value = True
 

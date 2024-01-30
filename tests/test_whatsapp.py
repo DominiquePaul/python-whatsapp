@@ -1,5 +1,5 @@
 import pytest
-import src.whatsapp as wa
+import whatsapp.utils as wa
 
 
 @pytest.mark.asyncio
@@ -15,7 +15,7 @@ async def test_parse_whatsapp_message_text(example_text_message):
         result.message_body == "Hello, this is the message"
     ), "The 'message_body' should contain the message text"
     assert (
-        result.message_id
+        result.wamid
         == "wamid.HBgNNDkxNTE1OTkyNjE2MhUCABIYFDNBMDIwQjk1NzQ1ODgxRUI1Njk1AA=="
     )
 
@@ -33,7 +33,7 @@ async def test_parse_whatsapp_message_text_reply(example_text_reply):
         result.message_body == "Hi, my message references the one above"
     ), "The 'message_body' should contain the message text"
     assert (
-        result.reference_message_id
+        result.reference_wamid
         == "wamid.HBgNNDkxNTE1OTkyNjE2MhUCABIYFDNBMDIwQjk1NzQ1ODgxRUI1Njk1AA=="
     )
     assert result.reference_message_user_phone == "15551291301"
@@ -50,9 +50,9 @@ async def test_parse_voice_message(example_voice_message):
         parsed_message.webhook_id == "206144975918077"
     ), "The webhook_id should match the fixture."
     assert (
-        parsed_message.message_id
+        parsed_message.wamid
         == "wamid.HBgNNDkxNTE1OTkyNjE2MhUCABIYFDNBM0M2MDQ3OEI4RDcxMDMwODE0AA=="
-    ), "The message_id should match the fixture."
+    ), "The wamid should match the fixture."
     assert (
         parsed_message.phone_number_id == "196914110180497"
     ), "The phone_number_id should match the fixture."
@@ -88,9 +88,9 @@ async def test_parse_image_message(example_image_message):
         parsed_message.webhook_id == "206144975918077"
     ), "The webhook_id should match the fixture."
     assert (
-        parsed_message.message_id
+        parsed_message.wamid
         == "wamid.HBgNNDkxNTE1OTkyNjE2MhUCABIYFDNBNUIyN0IzRjE5MUIzREM0Qjc3AA=="
-    ), "The message_id should match the fixture."
+    ), "The wamid should match the fixture."
     assert (
         parsed_message.phone_number_id == "196914110180497"
     ), "The phone_number_id should match the fixture."

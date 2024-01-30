@@ -1,7 +1,7 @@
 import httpx
-import src.config as cfg
+import whatsapp.config as cfg
 from dataclasses import dataclass, field
-import src.constants as c
+import whatsapp.constants as c
 
 
 @dataclass

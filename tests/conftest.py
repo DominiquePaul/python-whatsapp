@@ -1,5 +1,5 @@
 import pytest
-from src.constants import WebhookRequestData
+from whatsapp.constants import WebhookRequestData
 
 
 @pytest.fixture
