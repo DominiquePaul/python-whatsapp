@@ -1,10 +1,10 @@
 import typing as t
 import json
-import os
 from functools import wraps
 from fastapi import Response, Request, HTTPException
 import whatsapp.constants as c
 import logging
+import config as cfg
 
 import whatsapp.utils as wa
 
@@ -19,7 +19,7 @@ def verify(request: Request):
     token = request.query_params.get("hub.verify_token")
 
     if mode and challenge:
-        if token != os.environ["VERIFY_TOKEN"]:
+        if token != cfg.WHATSAPP_VERIFY_TOKEN:
             return Response(content="Verification token mismatch", status_code=403)
         return Response(content=request.query_params["hub.challenge"])
 
