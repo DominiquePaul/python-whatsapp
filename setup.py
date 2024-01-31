@@ -1,9 +1,9 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="whatsapp",
     version="0.1",
-    packages=find_packages(),
+    packages=["whatsapp"],
     install_requires=[
         "annotated-types>=0.6.0",
         "anyio>=4.2.0",

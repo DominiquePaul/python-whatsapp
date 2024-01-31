@@ -1,7 +1,24 @@
-import httpx
-import whatsapp.config as cfg
+import json
+import logging
+import os
 from dataclasses import dataclass, field
-import whatsapp.constants as c
+
+import httpx
+from dotenv import load_dotenv
+from fastapi import HTTPException, Request, Response
+from pydantic import BaseModel
+
+load_dotenv()
+
+WHATSAPP_TOKEN = os.environ["WHATSAPP_TOKEN"]
+WHATSAPP_API_VERSION = os.environ["WHATSAPP_API_VERSION"]
+WHATSAPP_PHONE_NUMBER_ID = os.environ["WHATSAPP_PHONE_NUMBER_ID"]
+WHATSAPP_VERIFY_TOKEN = os.environ["WHATSAPP_VERIFY_TOKEN"]
+
+
+class WebhookRequestData(BaseModel):
+    object: str = ""
+    entry: list = []
 
 
 @dataclass
@@ -25,12 +42,46 @@ class WamMediaType(WamBase):
     media_bytes: bytes = field(default=b"")
 
 
-def is_valid_whatsapp_message(body: c.WebhookRequestData) -> bool:
+def verify(request: Request):
+    """
+    On webook verification VERIFY_TOKEN has to match the token at the
+    configuration and send back "hub.challenge" as success.
+    """
+    mode = request.query_params.get("hub.mode") == "subscribe"
+    challenge = request.query_params.get("hub.challenge")
+    token = request.query_params.get("hub.verify_token")
+
+    if mode and challenge:
+        if token != WHATSAPP_VERIFY_TOKEN:
+            return Response(content="Verification token mismatch", status_code=403)
+        return Response(content=request.query_params["hub.challenge"])
+
+    return Response(content="Required arguments haven't passed.", status_code=400)
+
+
+async def process_webhook_data(data: WebhookRequestData) -> WamBase | None:
+    if data.entry[0].get("changes", [{}])[0].get("value", {}).get("statuses"):
+        logging.info("Received a WhatsApp status update.")
+        return None
+    # if not a status update
+    try:
+        if is_valid_whatsapp_message(data):
+            wam = await parse_whatsapp_message(data)
+            return wam
+        else:
+            # if the request is not a WhatsApp API event, return an error
+            raise HTTPException(status_code=404, detail="Not a WhatsApp API event")
+    except json.JSONDecodeError:
+        logging.error("Failed to decode JSON")
+        raise HTTPException(status_code=400, detail="Invalid JSON provided")
+
+
+def is_valid_whatsapp_message(body: WebhookRequestData) -> bool:
     """
     Validates the structure of the incoming webhook event to ensure it contains a WhatsApp message.
 
     Args:
-        body (c.WebhookRequestData): The incoming webhook request data.
+        body (WebhookRequestData): The incoming webhook request data.
 
     Returns:
         bool: True if the message structure is valid, False otherwise.
@@ -41,7 +92,7 @@ def is_valid_whatsapp_message(body: c.WebhookRequestData) -> bool:
         return False
 
 
-async def parse_whatsapp_message(body: c.WebhookRequestData) -> WamBase:
+async def parse_whatsapp_message(body: WebhookRequestData) -> WamBase:
     """
     Parse the incoming webhook request data and return an instance of WamBase or WamMediaType.
 
@@ -51,7 +102,7 @@ async def parse_whatsapp_message(body: c.WebhookRequestData) -> WamBase:
     unsupported, it raises a ValueError.
 
     Args:
-        body (c.WebhookRequestData): The incoming webhook request data.
+        body (WebhookRequestData): The incoming webhook request data.
 
     Returns:
         WamBase: An instance of WamBase for text messages.
@@ -108,8 +159,8 @@ async def _download_media(media_id) -> bytes:
     Returns:
         bytes: The content of the media file.
     """
-    endpoint = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{media_id}"
-    headers = {"Authorization": f"Bearer {cfg.WHATSAPP_TOKEN}"}
+    endpoint = f"https://graph.facebook.com/{WHATSAPP_API_VERSION}/{media_id}"
+    headers = {"Authorization": f"Bearer {WHATSAPP_TOKEN}"}
 
     async with httpx.AsyncClient(timeout=10) as client:
         response = await client.get(endpoint, headers=headers)
@@ -139,7 +190,8 @@ async def _post_httpx_request(
     Returns:
         dict: The JSON content of the response.
     """
-    headers = {"Authorization": f"Bearer {cfg.WHATSAPP_TOKEN}"}
+    headers = {"Authorization": f"Bearer {WHATSAPP_TOKEN}"}
+    print(WHATSAPP_TOKEN)
     if data:
         headers["Content-Type"] = "application/json"
     async with httpx.AsyncClient(timeout=10) as client:
@@ -179,7 +231,7 @@ async def send_message(recipient_id: str, message: str) -> dict:
         "type": "text",
         "text": {"preview_url": False, "body": message},
     }
-    url = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.WHATSAPP_PHONE_NUMBER_ID}/messages"
+    url = f"https://graph.facebook.com/{WHATSAPP_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
     return await _post_httpx_request(url, data=data)
 
 
@@ -216,7 +268,7 @@ async def send_quick_reply_message(
             "action": {"buttons": btns},
         },
     }
-    endpoint = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.WHATSAPP_PHONE_NUMBER_ID}/messages"
+    endpoint = f"https://graph.facebook.com/{WHATSAPP_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
     return await _post_httpx_request(endpoint, data=data)
 
 
@@ -237,7 +289,7 @@ async def _upload_media(file_data: bytes, file_name: str, mime_type: str) -> dic
         "type": (None, "application/json"),
         "messaging_product": (None, "whatsapp"),
     }
-    endpoint: str = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.WHATSAPP_PHONE_NUMBER_ID}/media"
+    endpoint: str = f"https://graph.facebook.com/{WHATSAPP_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/media"
     return await _post_httpx_request(endpoint, files=files)
 
 
@@ -264,5 +316,5 @@ async def send_pdf(
         "type": "document",
         "document": {"filename": file_name, "id": media_id},
     }
-    endpoint = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.WHATSAPP_PHONE_NUMBER_ID}/messages"
+    endpoint = f"https://graph.facebook.com/{WHATSAPP_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
     return await _post_httpx_request(endpoint, data=data)

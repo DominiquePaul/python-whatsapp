@@ -1,18 +1,16 @@
-import logging
-from dotenv import load_dotenv
-from fastapi import FastAPI, Request, Depends
-import uvicorn
-
-import whatsapp.constants as c
-import whatsapp.config as cfg
-import whatsapp.utils as wa
-import whatsapp.fastapi as wastapi
-
 import json
+import logging
+
+import uvicorn
+from dotenv import load_dotenv
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 
+import whatsapp as wa
 
-load_dotenv()
+load_dotenv()  # needs to happen before cfg is loaded
+
+
 logging.basicConfig(
     filename="example.log",
     level=logging.DEBUG,
@@ -22,19 +20,14 @@ logging.basicConfig(
 # Init App.
 app = FastAPI()
 
-# Request Models.
-
 
 @app.router.get("/api/whatsapp")
 async def verify(request: Request):
-    return wastapi.verify(request)
+    return wa.verify(request)
 
 
-# wam: wa.WamBase | None = None # data: c.WebhookRequestData
-# , response_model=wa.WamBase
 @app.router.post("/api/whatsapp")
-# @wastapi.whatsapp_webhook_decorator
-async def webhook(wam: wa.WamBase = Depends(wastapi.process_webhook_data)):
+async def webhook(wam: wa.WamBase = Depends(wa.process_webhook_data)):
     if wam is None:
         return JSONResponse(content="ok", status_code=200)
 
@@ -48,5 +41,5 @@ async def webhook(wam: wa.WamBase = Depends(wastapi.process_webhook_data)):
 
 
 if __name__ == "__main__":
-    print("your verify token is: ", cfg.WHATSAPP_VERIFY_TOKEN)
+    print("your verify token is: ", wa.WHATSAPP_VERIFY_TOKEN)
     uvicorn.run("grannymail.main:app", reload=True)

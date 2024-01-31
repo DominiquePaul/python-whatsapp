@@ -1,5 +1,6 @@
 import pytest
-import whatsapp.utils as wa
+
+import whatsapp as wa
 
 
 @pytest.mark.asyncio
