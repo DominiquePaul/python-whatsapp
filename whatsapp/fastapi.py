@@ -4,7 +4,7 @@ from functools import wraps
 from fastapi import Response, Request, HTTPException
 import whatsapp.constants as c
 import logging
-import config as cfg
+import whatsapp.config as cfg
 
 import whatsapp.utils as wa
 
