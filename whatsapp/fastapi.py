@@ -3,7 +3,6 @@ import json
 import os
 from functools import wraps
 from fastapi import Response, Request, HTTPException
-from fastapi.responses import JSONResponse
 import whatsapp.constants as c
 import logging
 

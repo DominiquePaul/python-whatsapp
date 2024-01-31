@@ -14,7 +14,7 @@ setup(
         "fastapi>=0.109.0",
         "h11>=0.14.0",
         "httpcore>=1.0.2",
-        "httpx>=0.26.0",
+        "httpx>=0.25.2",
         "idna>=3.6",
         "iniconfig>=2.0.0",
         "packaging>=23.2",

@@ -25,14 +25,14 @@ app = FastAPI()
 # Request Models.
 
 
-@app.router.get("/api/webhook")
+@app.router.get("/api/whatsapp")
 async def verify(request: Request):
     return wastapi.verify(request)
 
 
 # wam: wa.WamBase | None = None # data: c.WebhookRequestData
 # , response_model=wa.WamBase
-@app.router.post("/api/webhook")
+@app.router.post("/api/whatsapp")
 # @wastapi.whatsapp_webhook_decorator
 async def webhook(wam: wa.WamBase = Depends(wastapi.process_webhook_data)):
     if wam is None:
@@ -48,5 +48,5 @@ async def webhook(wam: wa.WamBase = Depends(wastapi.process_webhook_data)):
 
 
 if __name__ == "__main__":
-    print("your verify token is: ", cfg.VERIFY_TOKEN)
+    print("your verify token is: ", cfg.WHATSAPP_VERIFY_TOKEN)
     uvicorn.run("grannymail.main:app", reload=True)

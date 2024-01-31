@@ -179,7 +179,7 @@ async def send_message(recipient_id: str, message: str) -> dict:
         "type": "text",
         "text": {"preview_url": False, "body": message},
     }
-    url = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.PHONE_NUMBER_ID}/messages"
+    url = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.WHATSAPP_PHONE_NUMBER_ID}/messages"
     return await _post_httpx_request(url, data=data)
 
 
@@ -216,7 +216,7 @@ async def send_quick_reply_message(
             "action": {"buttons": btns},
         },
     }
-    endpoint = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.PHONE_NUMBER_ID}/messages"
+    endpoint = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.WHATSAPP_PHONE_NUMBER_ID}/messages"
     return await _post_httpx_request(endpoint, data=data)
 
 
@@ -237,7 +237,7 @@ async def _upload_media(file_data: bytes, file_name: str, mime_type: str) -> dic
         "type": (None, "application/json"),
         "messaging_product": (None, "whatsapp"),
     }
-    endpoint: str = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.PHONE_NUMBER_ID}/media"
+    endpoint: str = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.WHATSAPP_PHONE_NUMBER_ID}/media"
     return await _post_httpx_request(endpoint, files=files)
 
 
@@ -264,5 +264,5 @@ async def send_pdf(
         "type": "document",
         "document": {"filename": file_name, "id": media_id},
     }
-    endpoint = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.PHONE_NUMBER_ID}/messages"
+    endpoint = f"https://graph.facebook.com/{cfg.WHATSAPP_API_VERSION}/{cfg.WHATSAPP_PHONE_NUMBER_ID}/messages"
     return await _post_httpx_request(endpoint, data=data)
